@@ -3,268 +3,411 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HarshEdits - The Ultimate Editing Resource Hub</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Software Hub - Reimagined</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --glow-color-blue: hsl(230, 100%, 60%);
+            --glow-color-red: hsl(0, 100%, 50%);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #090a0f; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(to bottom, #4f46e5, #a855f7); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(to bottom, #6366f1, #c084fc); }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #020208;
+            color: #e5e7eb;
+            overflow: hidden;
+            min-height: 100vh;
+        }
+
+        #mouse-follower {
+            position: fixed; top: 0; left: 0;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.1), transparent 60%);
+            border-radius: 50%; pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9999; opacity: 0;
+            transition: opacity 0.5s ease-out, transform 0.05s linear;
+        }
+
+        #landing-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; z-index: 100; background-color: transparent;
+            transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer;
+        }
+        #landing-screen.hidden { opacity: 0; pointer-events: none; }
+        
+        #landing-title {
+            position: relative; font-weight: 900;
+            animation: fadeInDown 1s ease-out 0.5s both;
+            text-shadow: 0 0 15px var(--glow-color-blue), 0 0 30px var(--glow-color-blue); color: #f0f0f5;
+        }
+
+        #landing-title::before, #landing-title::after {
+            content: attr(data-text); position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; background: #020208;
+            overflow: hidden; clip-path: inset(50% 0 50% 0);
+        }
+
+        #landing-title::before { left: -2px; text-shadow: 2px 0 var(--glow-color-red); animation: glitch-anim-1 3s infinite linear alternate-reverse; }
+        #landing-title::after { left: 2px; text-shadow: -2px 0 var(--glow-color-blue); animation: glitch-anim-2 2.5s infinite linear alternate-reverse; }
+        
+        @keyframes glitch-anim-1 { 0% { clip-path: inset(46% 0 25% 0); } 25% { clip-path: inset(14% 0 75% 0); } 50% { clip-path: inset(80% 0 10% 0); } 75% { clip-path: inset(30% 0 45% 0); } 100% { clip-path: inset(5% 0 90% 0); } }
+        @keyframes glitch-anim-2 { 0% { clip-path: inset(82% 0 12% 0); } 25% { clip-path: inset(22% 0 42% 0); } 50% { clip-path: inset(62% 0 32% 0); } 75% { clip-path: inset(2% 0 88% 0); } 100% { clip-path: inset(92% 0 2% 0); } }
+
+        #landing-subtitle { animation: fadeInUp 1s ease-out 1s both; }
+
+        #enter-orb {
+            width: 160px; height: 160px; border-radius: 50%; display: flex;
+            justify-content: center; align-items: center; position: relative;
+            margin-top: 2.5rem; transition: transform 0.4s ease-in-out, box-shadow 0.4s ease;
+            animation: float 4s ease-in-out infinite, fadeInUp 1s ease-out 1.5s both;
+            box-shadow: 0 0 20px 0px rgba(79, 70, 229, 0.5), inset 0 0 20px 0px rgba(79, 70, 229, 0.3);
+            border: 2px solid rgba(129, 140, 248, 0.5);
+            background: radial-gradient(circle, rgba(20, 15, 70, 0.5) 0%, rgba(10, 10, 20, 0.8) 70%); backdrop-filter: blur(5px);
+        }
+        #enter-orb:hover { transform: scale(1.1); box-shadow: 0 0 35px 5px rgba(79, 70, 229, 0.7), inset 0 0 30px 0px rgba(79, 70, 229, 0.5); }
+        #enter-orb::before, #enter-orb::after {
+            content: ''; position: absolute; width: 100%; height: 100%; border-radius: 50%;
+            border: 2px solid transparent; animation: pulse 3s infinite ease-out;
+        }
+        #enter-orb::before { border-top-color: rgba(167, 139, 250, 0.8); }
+        #enter-orb::after { animation-delay: 1.5s; border-left-color: rgba(99, 102, 241, 0.8); }
+        #enter-orb span { font-weight: 600; font-size: 1.2rem; color: #fff; text-shadow: 0 0 10px rgba(255, 255, 255, 0.9); animation: textPulse 3s infinite ease-in-out; }
+        
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+        @keyframes pulse { 0% { transform: rotate(0deg) scale(1); opacity: 1; } 50% { transform: rotate(180deg) scale(1.4); opacity: 0.5; } 100% { transform: rotate(360deg) scale(1); opacity: 1; } }
+        @keyframes textPulse { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; } }
+
+        .page-view { display: none; }
+        .page-view.active { display: block; animation: fadeIn 0.8s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        #main-content { height: 100vh; overflow-y: auto; background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%); }
+        
+        .glass-card {
+            background: rgba(17, 24, 39, 0.5); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease-out; position: relative;
+            overflow: hidden; border-radius: 1rem; transform: translateY(20px); opacity: 0;
+        }
+        .glass-card.visible { transform: translateY(0); opacity: 1; }
+        .glass-card:hover { transform: translateY(-10px) scale(1.03); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); border-color: rgba(255, 255, 255, 0.2); }
+        .glass-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(300px circle at var(--x, 50%) var(--y, 50%), rgba(79, 70, 229, 0.25), transparent 50%); opacity: 0; transition: opacity 0.5s; pointer-events: none; }
+        .glass-card:hover::before { opacity: 1; }
+        
+        #bg-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; transition: opacity 1.5s ease-out, filter 1.5s ease-out; }
+
+        .gradient-btn { background-image: linear-gradient(to right, #4f46e5, #7c3aed, #a855f7); background-size: 200% auto; transition: all 0.3s ease; }
+        .gradient-btn:hover { background-position: right center; transform: scale(1.05); }
+
+    </style>
 </head>
 <body>
-    <!-- Custom Cursor -->
-    <div class="custom-cursor"></div>
+    <div id="mouse-follower"></div>
+    <canvas id="bg-canvas"></canvas>
 
-    <header>
-        <nav>
-            <div class="logo">HarshEdits</div>
-            <ul class="nav-links">
-                <li><a href="#software">Software</a></li>
-                <li><a href="#plugins">Plugins</a></li>
-                <li><a href="#scripts">Scripts</a></li>
-                <li><a href="#assets">Assets</a></li>
-                <li><a href="#request">Request</a></li>
-            </ul>
-            <a href="https://discord.gg/example" class="discord-btn">Join Discord</a>
-            <div class="hamburger">☰</div>
-        </nav>
-    </header>
-
-    <section class="hero">
-        <div class="hero-content">
-            <h1>The Ultimate Editing Resource Hub</h1>
-            <p>Exclusive access to all the software, plugins, scripts, and assets you need. Curated for the Harsh Edits community. We've expanded our collection with more detailed descriptions, version info, and tips for optimal use to help you get the most out of these tools.</p>
-        </div>
-    </section>
-
-    <section class="featured">
-        <div class="featured-card">
-            <img src="https://via.placeholder.com/300x200" alt="Easy Workflow">
-            <h3>Easy Workflow</h3>
-            <p>A Script by Harsh Edits</p>
-            <p>Boost your productivity with Easy Workflow, the ultimate script designed to automate repetitive tasks and simplify your editing process in After Effects. Now with added features like custom hotkeys and integration tips for seamless workflow.</p>
-            <button class="view-details" data-modal="easy-workflow-modal">View Details</button>
-        </div>
-    </section>
-
-    <section id="software" class="section">
-        <h2>Adobe Software</h2>
-        <ul class="resource-list">
-            <li>After Effects - Motion graphics and visual effects. Latest version: 2025. Tips: Use with plugins for enhanced VFX.</li>
-            <li>Premiere Pro - Professional video editing. Latest version: 2025. Tips: Integrate with After Effects for dynamic links.</li>
-            <li>Photoshop - Image editing and graphic design. Latest version: 2025. Tips: AI-powered tools for faster edits.</li>
-            <li>Illustrator - Vector graphics and illustration. Latest version: 2025. Tips: Perfect for scalable designs.</li>
-            <li>Media Encoder - Rendering and transcoding. Latest version: 2025. Tips: Batch processing for efficiency.</li>
-        </ul>
-    </section>
-
-    <section id="plugins" class="section">
-        <h2>Plugins</h2>
-        <ul class="resource-list">
-            <li>Sapphire Suite - Industry-standard VFX plugins. Enhanced with new glow effects in latest update.</li>
-            <li>BCC Suite - Comprehensive visual effects. Includes advanced particle systems.</li>
-            <li>Magic Bullet Suite - Professional color correction tools. Now with real-time playback.</li>
-            <li>Shooter Suite - Footage prep and delivery tools. Optimized for 8K workflows.</li>
-            <li>VFX Suite - Keying, tracking, and cleanup. AI-assisted for faster results.</li>
-            <li>Element 3D - Advanced 3D render engine. Supports OBJ imports with ease.</li>
-            <li>Saber - High-energy beams and effects. Customizable for sci-fi projects.</li>
-            <li>RSMB - ReelSmart Motion Blur. Intelligent blur for realistic motion.</li>
-            <li>FX Console - Workflow utility for effects. Quick search and apply.</li>
-            <li>Trapcode Suite - 3D motion graphics and VFX. Particle simulations upgraded.</li>
-            <li>Optical Flares - Realistic lens flare generator. Preset library expanded.</li>
-            <li>Twixtor Pro - Intelligent slow-motion. Frame interpolation perfected.</li>
-            <li>Red Giant Universe - Effects and transitions library. Free and premium options.</li>
-            <li>Shadow Studio 3 - Realistic shadow generator. Layer-based control.</li>
-            <li>Text Explorer - Advanced text animation tool. Kinetic typography made easy.</li>
-            <li>Deep Glow - Physically accurate glows. GPU-accelerated.</li>
-            <li>Liquid Glass - Liquid and glass simulation. Fluid dynamics integrated.</li>
-        </ul>
-    </section>
-
-    <section id="scripts" class="section">
-        <h2>Scripts & Extensions</h2>
-        <ul class="resource-list">
-            <li>Motion Bro - The most popular extension for presets. Thousands of animations.</li>
-            <li>Flow - Easy animation curve control. Bezier editing simplified.</li>
-            <li>GEOlayers 3 - Map animation and data visualization. GeoJSON support added.</li>
-            <li>JerryFlow V2 - The ultimate extension for After Effects. Multi-tool workflow.</li>
-            <li>AtomX - Extension for motion graphics packages. Now with AtomX Mega Pack integration.</li>
-            <li>Keystone - Easy layer alignment & distribution. Precision tools updated.</li>
-        </ul>
-    </section>
-
-    <section id="assets" class="section">
-        <h2>Assets</h2>
-        <ul class="resource-list">
-            <li>Malice Ultimate Pack - Light leaks, dust, and film grain. <a href="#">Download</a>. High-res overlays for cinematic looks.</li>
-            <li>Sound FX Library - Whooshes, impacts, and risers. <a href="#">Download</a>. Royalty-free audio.</li>
-            <li>LUTs Collection - Cinematic color grading presets. <a href="#">Download</a>. Compatible with multiple software.</li>
-            <li>Editing Assets - Bundle of digital resources. <a href="#">Download</a>. Fonts, textures, and more.</li>
-        </ul>
-    </section>
-
-    <section class="utilities section">
-        <h2>Utilities & Other Software</h2>
-        <ul class="resource-list">
-            <li>Topaz AI Suite - AI-powered image & video enhancement. Upscaling and denoising improved.</li>
-            <li>Filmora 14 - AI-powered efficiency and simplicity. Beginner-friendly with pro features.</li>
-            <li>IDM (Cracked) - Internet Download Manager. Faster downloads with resume support.</li>
-            <li>Pure Ref - Simple reference image viewer. Drag-and-drop organization.</li>
-        </ul>
-    </section>
-
-    <section class="plugins-pack section">
-        <div class="pack-card">
-            <h3>100+ Plugins Pack</h3>
-            <p>Is pack mein After Effects, Premiere Pro, Photoshop, aur Illustrator ke liye 100 se bhi zyada plugins shamil hain. Aap is button par click karke unki poori list dekh sakte hain. Expanded with compatibility notes and installation guides.</p>
-            <button class="view-details" data-modal="plugins-list-modal">Plugins List</button>
-        </div>
-    </section>
-
-    <section id="request" class="request section">
-        <h2>Missing a Resource?</h2>
-        <p>Can't find the plugin, script, or software you're looking for? Join our Discord server and let us know in the dedicated requests channel. We'll do our best to add it to the hub! Community-driven updates ensure we stay current.</p>
-        <a href="https://discord.gg/example" class="request-btn">Request on Discord</a>
-    </section>
-
-    <div id="no-results" class="no-results hidden">
-        <h2>No Results Found</h2>
-        <p>Try a different search term.</p>
+    <div id="landing-screen">
+        <h1 id="landing-title" class="text-6xl md:text-8xl font-black tracking-tighter text-white mb-4" data-text="Software Hub">Software Hub</h1>
+        <p id="landing-subtitle" class="text-lg text-gray-400 max-w-xl">The complete resource hub for professional editors. Click the orb to engage.</p>
+        <div id="enter-orb" role="button" aria-label="Enter the Software Hub"><span>Engage</span></div>
     </div>
 
-    <footer>
-        <p>© Harsh Edits. All rights reserved. A resource hub for the community.</p>
-    </footer>
+    <!-- Main Content Container -->
+    <div id="content-container">
+        <!-- Main View (Home Page) -->
+        <div id="main-view" class="page-view active">
+            <div id="main-content">
+                <header class="py-6 px-6 md:px-12 sticky top-0 bg-[#090a0f]/80 backdrop-blur-sm z-50 border-b border-gray-800/50">
+                    <div class="flex justify-between items-center gap-4">
+                        <div class="flex-shrink-0">
+                             <h2 class="text-2xl md:text-3xl font-bold text-white">Resource Library</h2>
+                        </div>
+                        <div class="relative max-w-md w-full">
+                            <input type="text" id="search-input" placeholder="Search all resources..." class="w-full bg-gray-900/50 border border-gray-700 rounded-full py-2.5 px-5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all">
+                             <svg class="w-5 h-5 text-gray-500 absolute top-1/2 right-5 -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                        </div>
+                         <a href="https://discord.gg/y3qnSA4ZbE" target="_blank" class="gradient-btn hidden md:inline-block text-white font-semibold py-2.5 px-6 rounded-full shadow-lg flex-shrink-0">Join Discord</a>
+                    </div>
+                </header>
 
-    <!-- Modals -->
-    <div id="easy-workflow-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Easy Workflow</h2>
-            <p>A Script by Harsh Edits</p>
-            <p>Boost your productivity with Easy Workflow, the ultimate script designed to automate repetitive tasks and simplify your editing process in After Effects. Additional info: Supports AE 2025, includes tutorial links.</p>
-            <p>Easy Workflow v2.3.0</p>
-            <button>Download Now</button>
+                <main class="px-6 md:px-12 pb-12">
+                     <div id="no-results" class="text-center py-16 hidden"><h3 class="text-2xl font-bold text-white">No Results Found</h3><p class="text-gray-400">Try a different search term.</p></div>
+
+                    <section id="software" class="resource-section pt-8">
+                        <h3 class="text-3xl font-bold mb-6 text-white border-l-4 border-indigo-500 pl-4">Adobe Software</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6"></div>
+                    </section>
+                    
+                    <section id="plugins" class="resource-section pt-16">
+                        <h3 class="text-3xl font-bold mb-6 text-white border-l-4 border-purple-500 pl-4">Plugins</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
+                    </section>
+
+                    <section id="scripts" class="resource-section pt-16">
+                        <h3 class="text-3xl font-bold mb-6 text-white border-l-4 border-teal-500 pl-4">Scripts & Extensions</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"></div>
+                    </section>
+                    
+                    <section id="assets" class="resource-section pt-16">
+                        <h3 class="text-3xl font-bold mb-6 text-white border-l-4 border-rose-500 pl-4">Assets</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+                    </section>
+
+                    <section id="utilities" class="resource-section pt-16">
+                        <h3 class="text-3xl font-bold mb-6 text-white border-l-4 border-yellow-500 pl-4">Utilities & Other Software</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+                    </section>
+
+                </main>
+            </div>
+        </div>
+
+        <!-- Detail View -->
+        <div id="detail-view" class="page-view">
+             <div class="min-h-screen p-6 md:p-12">
+                <button class="back-button gradient-btn text-white font-semibold py-2 px-5 rounded-full shadow-lg mb-8 inline-flex items-center space-x-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                    <span>Back to Library</span>
+                </button>
+                <div id="detail-content">
+                    <!-- Detail content will be injected here -->
+                </div>
+            </div>
         </div>
     </div>
 
-    <div id="download-links-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Download Links</h2>
-            <p>Available Versions</p>
-            <!-- Add list or links here -->
-        </div>
-    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+    const DB = {
+        software: [
+            { id: 'after-effects', name: 'After Effects', desc: 'Motion graphics and visual effects', img: 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Adobe_After_Effects_CC_icon.svg', versions: [{ name: '2025', url: 'https://drive.google.com/file/d/1QF0AHW52ZDpfHqLLIZ4hUSqHHy0Q30ZQ/view?usp=sharing' }, { name: '2024', url: 'https://drive.google.com/file/d/11hAL0WdA77ewKd4iJeGDi1AzViUTtlEM/view?usp=sharing' }, { name: '2023', url: 'https://drive.google.com/file/d/1g_T3o5tcNprBua8jSWqcRe9egwlmCmFU/view?usp=sharing' }, { name: '2022', url: 'https://drive.google.com/file/d/1YRtN-isE8B2c-f2QAW3UniccgLNOSg0n/view?usp=sharing' }, { name: '2021', url: 'https://drive.google.com/file/d/1ZHq06y_CFQtLDTch9GpHt5IwEnWCtGDC/view?usp=sharing' }, { name: '2020', url: 'https://drive.google.com/file/d/1bKed59m-y5ZZI6-4IlEgJBzdGN1C5Rxj/view?usp=sharing' }] },
+            { id: 'premiere-pro', name: 'Premiere Pro', desc: 'Professional video editing', img: 'https://upload.wikimedia.org/wikipedia/commons/4/40/Adobe_Premiere_Pro_CC_icon.svg', versions: [{ name: '2025', url: 'https://drive.google.com/file/d/1s2IqZevh2S6oJrVbG3IlZxdUSdfLqT5M/view?usp=sharing' }, { name: '2024', url: 'https://drive.google.com/file/d/1dYcPG8pQHgweVzqbsHWFUeDM51XOhoj-/view?usp=sharing' }, { name: '2023', url: 'https://drive.google.com/file/d/1slPjxo2WmqvJNWMiAi-s70sQABO3AHMN/view?usp=sharing' }, { name: '2022', url: 'https://drive.google.com/file/d/1O3acpw62IVR5oFeMKezpMwjw7rhYv2i-/view?usp=sharing' }, { name: '2021', url: 'https://drive.google.com/file/d/1F_mHHuBdUMcHyWxB03hECKKhCG2sQYYL/view?usp=sharing' }, { name: '2020', url: 'https://drive.google.com/file/d/1xOUNF2XW4YvhmB6qUsW-Yt-_N_kESc5i/view?usp=sharing' }] },
+            { id: 'photoshop', name: 'Photoshop', desc: 'Image editing and graphic design', img: 'https://upload.wikimedia.org/wikipedia/commons/a/af/Adobe_Photoshop_CC_icon.svg', versions: [{ name: '2025', url: 'https://drive.google.com/file/d/1klaoh8IR0YvGJlaxqsbattIaG85Ep0Pw/view?usp=drive_link' }, { name: '2024', url: 'https://drive.google.com/file/d/1SEoO-lnrGPP-K7goG75gsZlHiK1wBmf9/view?usp=sharing' }, { name: '2023', url: 'https://drive.google.com/file/d/1kuKfs6dEMMKbTDIq93kIZdYDkB1zFtlh/view?usp=drive_link' }, { name: '2022', url: 'https://drive.google.com/file/d/1kprHBrLUpotVzn1G1spFc0hpoIxFVorM/view?usp=drive_link' }, { name: '2021', url: 'https://drive.google.com/file/d/1kkMbEimMxdIEKVnSR3V_WQLUhyQLA066/view?usp=drive_link' }, { name: '2020', url: 'https://drive.google.com/file/d/1kT8JgYqpvnj30snAiKGjIoXcFgh6nwva/view?usp=sharing' }] },
+            { id: 'illustrator', name: 'Illustrator', desc: 'Vector graphics and illustration', img: 'https://upload.wikimedia.org/wikipedia/commons/f/fb/Adobe_Illustrator_CC_icon.svg', versions: [{ name: '2025', url: 'https://drive.google.com/file/d/1ZNajSGAaCaKtcQwESEEKcvA6xTjaXuWm/view?usp=drive_link' }, { name: '2024', url: '#' }, { name: '2023', url: 'https://drive.google.com/file/d/1l8qS2J0lGnZ0bd5HnW4n3iTrpHfuW3sk/view?usp=drive_link' }, { name: '2022', url: 'https://drive.google.com/file/d/1kx9dU7yV1IpdWlTypA2FZbPjNwKuP7Od/view?usp=drive_link' }, { name: '2021', url: 'https://drive.google.com/file/d/1lAtoWxBQm7SdiZULyAD2YzeoAs00kY8-/view?usp=drive_link' }, { name: '2020', url: 'https://drive.google.com/file/d/1lBrgwAWTQaaCQodJR7rtCpbEumI0wwQb/view?usp=drive_link' }] },
+            { id: 'media-encoder', name: 'Media Encoder', desc: 'Rendering and transcoding', img: 'https://www.adobe.com/content/dam/acom/one-console/icons_rebrand/me_appicon.svg', versions: [{ name: '2025', url: 'https://drive.google.com/file/d/1plG-0BWg4zZNYJkyDd2tHakYIXO1vzVx/view?usp=sharing' }, { name: '2024', url: 'https://drive.google.com/file/d/1zHoJ6smv4H_OE2O2P39s1wj7LhIX3OTZ/view?usp=sharing' }, { name: '2023', url: 'https://drive.google.com/file/d/1Az9LBu1pBPaJ5xZoS39wsMfRaNnAz2pZ/view?usp=sharing' }, { name: '2022', url: 'https://drive.google.com/file/d/1rAbr8DRL5W3wFzyRnVohVwByOIw4agxm/view?usp=sharing' }, { name: '2021', url: 'https://drive.google.com/file/d/1Fv3-fK_3vJje6feWKq2dUjZbzE4ofxEV/view?usp=sharing' }, { name: '2020', url: 'https://drive.google.com/file/d/1o53VIZQsswD0de3FusXHlVJ8qwPM7dVZ/view?usp=sharing' }] }
+        ],
+        plugins: [
+            { id: 'sapphire', name: 'Sapphire Suite', desc: 'Industry-standard VFX plugins.', img: 'assets/sap.png', versions: [{ name: 'Sapphire 2024.5', url: '#' }, { name: 'Sapphire 2023.1', url: '#' }, { name: 'Sapphire 2022.5', url: '#' }] },
+            { id: 'bcc', name: 'BCC Suite', desc: 'Comprehensive visual effects.', img: 'assets/cc.png', versions: [{ name: 'Continuum 2022', url: 'https://drive.google.com/file/d/1k287dnhedu9NDOFJy852Why7YxU-2gQO/view?usp=sharing' }] },
+            { id: 'magic-bullet', name: 'Magic Bullet Suite', desc: 'Professional color correction tools.', img: 'assets/mb.png', versions: [{ name: 'Magic Bullet 2024', url: 'https://drive.google.com/file/d/1-9qeNipVsdnZ_oR7jQOmevMsArS6iAw1/view?usp=sharing' }] },
+            { id: 'shooter-suite', name: 'Shooter Suite', desc: 'Footage prep and delivery tools.', img: 'assets/rg-ss.png', versions: [{ name: 'Shooter Suite 13.1.14', url: 'https://drive.google.com/file/d/1npLp5qHObSe1_PfLMcJF_M3Ta1phMlIc/view?usp=sharing' }] },
+            { id: 'vfx-suite', name: 'VFX Suite', desc: 'Keying, tracking, and cleanup.', img: 'assets/vs.png', versions: [{ name: 'VFX Suite 2024', url: 'https://drive.google.com/file/d/1CZm5HASlt1L5pasFOzcN3o_6-b3hq4cz/view?usp=sharing' }] },
+            { id: 'element-3d', name: 'Element 3D', desc: 'Advanced 3D render engine.', img: 'assets/e3d.png', versions: [{ name: 'Element 3D v2.2', url: 'https://drive.google.com/file/d/1WzYQHhGlff3P0y9fAl07n1zh2-CRjEjG/view?usp=sharing' }] },
+            { id: 'saber', name: 'Saber', desc: 'High-energy beams and effects.', img: 'assets/sab.png', versions: [{ name: 'Saber 1.0.40', url: 'https://drive.google.com/file/d/1cGvMi3f2QOuoQGQnG85x4abfWwvjoUe4/view?usp=sharing' }] },
+            { id: 'rsmb', name: 'RSMB', desc: 'ReelSmart Motion Blur.', img: 'assets/rsmb.png', versions: [{ name: 'RSMB Pro', url: 'https://drive.google.com/file/d/1TU1buI7GXPi_i4jzm5FmyEK8nLlgSnXN/view?usp=sharing' }] },
+            { id: 'fx-console', name: 'FX Console', desc: 'Workflow utility for effects.', img: 'assets/fxc.png', versions: [{ name: 'Enter Version Name', url: '#' }] },
+            { id: 'trapcode-suite', name: 'Trapcode Suite', desc: '3D motion graphics and VFX.', img: 'assets/rg-ts.png', versions: [{ name: 'Trapcode 2023', url: 'https://drive.google.com/file/d/18mMCxWpuVlSREN4smoYtJcn_OVrZGObf/view?usp=sharing' }] },
+            { id: 'optical-flares', name: 'Optical Flares', desc: 'Realistic lens flare generator.', img: 'assets/VC-ofpng.png', versions: [{ name: 'Optical Flares v1.3.8', url: 'https://drive.google.com/file/d/1fo9vT2qCfM0fcUioEfTrAD3ZXlCK6m-C/view?usp=sharing' }] },
+            { id: 'twixtor-pro', name: 'Twixtor Pro', desc: 'Intelligent slow-motion.', img: 'assets/twxt.png', versions: [{ name: 'Twixtor Pro v7.3.0', url: 'https://drive.google.com/file/d/1pn1h9Mch_xLgFLfgKnh5VYVGa-HqY367/view?usp=drive_link' }] },
+            { id: 'red-giant-universe', name: 'Red Giant Universe', desc: 'Effects and transitions library.', img: 'assets/rgu.png', versions: [{ name: 'RG Universe 2024', url: 'https://drive.google.com/file/d/1-EjzbWk-fwnhaGsaBd6LSDdquZI4GVQC/view?usp=sharing' }] },
+            { id: 'shadow-studio-3', name: 'Shadow Studio 3', desc: 'Realistic shadow generator.', img: 'assets/ss3.png', versions: [{ name: 'Shadow Studio 3 v1.0.5', url: 'https://drive.google.com/file/d/1QuRTtfrn0Q3wzB0fdN3G2BpAK1LZaDuw/view?usp=drive_link' }] },
+            { id: 'text-explorer', name: 'Text Explorer', desc: 'Advanced text animation tool.', img: 'assets/te.png', versions: [{ name: 'Enter Version Name', url: '#' }] },
+            { id: 'deep-glow', name: 'Deep Glow', desc: 'Physically accurate glows.', img: 'assets/dg.jpg', versions: [{ name: 'DeepGlow 1.2', url: 'https://drive.google.com/drive/folders/1RuryQ6dG6b-M2C6hwlwkTEoEKXxcLsOd?usp=sharing' }, { name: 'DeepGlow 2', url: '#' }] },
+            { id: 'liquid-glass', name: 'Liquid Glass', desc: 'Liquid and glass simulation.', img: 'assets/lg.png', versions: [{ name: 'Enter Version Name', url: '#' }] },
+        ],
+        scripts: [
+            { id: 'motion-bro', name: 'Motion Bro', desc: 'The most popular extension for presets.', img: 'assets/motion_bro.png', versions: [{ name: 'For Ae 2020 Above', url: 'https://drive.google.com/file/d/1mZB3MrWiuGNeULbk2D0axaOUOj0R5N8v/view?usp=sharing' }, { name: 'For Ae 2021 Above', url: 'https://drive.google.com/file/d/1PI17qpqrlwJZrl8Jyj6R6Dl5MzG6_X9C/view?usp=sharing' }] },
+            { id: 'flow', name: 'Flow', desc: 'Easy animation curve control.', img: 'assets/flow.png', versions: [{ name: 'v1.5.2', url: 'https://drive.google.com/file/d/134dY8lo2HOJzCe_UJgh16IvDXzcPDih_/view?usp=drive_link' }] },
+            { id: 'geolayers', name: 'GEOlayers 3', desc: 'Map animation and data visualization.', img: 'assets/geolayers3.jpg', versions: [{ name: 'Enter Version Name', url: '#' }] },
+            { id: 'jerryflow-v2', name: 'JerryFlow V2', desc: 'The ultimate extension for After Effects', img: 'assets/JerryFlow_v2.png', versions: [{ name: 'JerryFlow V2.0.0', url: 'https://drive.google.com/file/d/1SawuVL0m85aSRbEAtuxiuzJw4MDewfpK/view?usp=sharing' }] },
+            { id: 'atomx', name: 'AtomX', desc: 'Extension for motion graphics packages.', img: 'assets/atom_x.jpg', versions: [{ name: 'v3.9.0', url: 'https://drive.google.com/file/d/198oG7orNkjGYuB34uHWKEzFkhwhZTJQl/view?usp=sharing' }] },
+            { id: 'keystone', name: 'Keystone', desc: 'Easy layer alignment & distribution.', img: 'assets/keystone.jpg', versions: [{ name: 'v1.1.6', url: 'https://drive.google.com/drive/folders/1Ykjk5fe8Nxi-xBqqFUeM3WvllgDru37A?usp=sharing' }] }
+        ],
+        assets: [
+            { id: 'malice-pack', name: 'Malice Ultimate Pack', desc: 'Light leaks, dust, and film grain.', img: 'https://placehold.co/80x80/be185d/fecdd3?text=MP', url: 'https://drive.google.com/drive/folders/1vZ0D6keKnKOEr8vPcPXoZt9KsuVEKqmR' },
+            { id: 'sfx-library', name: 'Sound FX Library', desc: 'Whooshes, impacts, and risers.', img: 'https://placehold.co/80x80/be185d/fecdd3?text=SFX', url: 'https://drive.google.com/drive/folders/1q6BzFxLDKY8tt48SqLng0-lPFODNZKpA' },
+            { id: 'lut-collection', name: 'LUTs Collection', desc: 'Cinematic color grading presets.', img: 'https://placehold.co/80x80/be185d/fecdd3?text=LUTs', url: '#' },
+            { id: 'editing-assets', name: 'Editing Assets', desc: 'Bundle of digital resources.', img: 'https://placehold.co/80x80/be185d/fecdd3?text=EA', url: 'https://drive.google.com/drive/folders/1jl0iH8E5w9d-jXYTw3uKhiAkVYdWZ2ia' }
+        ],
+        utilities: [
+             { id: 'topaz-ai', name: 'Topaz AI Suite', desc: 'AI-powered image & video enhancement.', img: 'https://cdn.prod.website-files.com/6005fac27a49a9cd477afb63/634d1e4a5cb8ac88fd07a065_1024.svg', versions: [{ name: 'Version 2.6.0', url: 'https://drive.google.com/file/d/1C-NrR-6ipfKIM06Moyy17EocvuJon6hQ/view?usp=sharing' }] },
+             { id: 'filmora-14', name: 'Filmora 14', desc: 'AI-powered efficiency and simplicity.', img: 'https://neveragain.allstatics.com/2019/assets/icon/logo/filmora-square.svg', versions: [{ name: 'v14.0.11.9772', url: 'https://drive.google.com/file/d/1--ITgkydgZQNKz0S0zoEJItEVxrIgsuv/view?usp=drivesdk' }] },
+             { id: 'idm', name: 'IDM (Cracked)', desc: 'Internet Download Manager.', img: 'https://cdn6.aptoide.com/imgs/9/c/6/9c688656c4d6227589d5fe3b68e038d2_icon.png?w=128', versions: [{ name: 'Version 20.4', url: '#' }] },
+             { id: 'pure-ref', name: 'Pure Ref', desc: 'Simple reference image viewer.', img: 'https://placehold.co/80x80/ca8a04/fefce8?text=Ref', versions: [{ name: 'Enter Version Name', url: '#' }] }
+        ]
+    };
 
-    <div id="plugins-list-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>100+ Plugins List</h2>
-            <p>Yahaan saare plugins ki poori list hai, unhe download karne ke liye un par click karein.</p>
-            <ul>
-                <li>Aescripts Character Builder v1.2.5</li>
-                <li>Aescripts Bend and Weld v2.0.1</li>
-                <li>Aescripts Mask Pathfinder v2.2.0</li>
-                <li>Auto Lip-Sync v1.11.000</li>
-                <li>AutoSway v1.6 Win</li>
-                <li>Blooming Flowers</li>
-                <li>Crate's Camera Script</li>
-                <li>CircusFX v1.90</li>
-                <li>Crate's Glow D-leaker v1.3.2</li>
-                <li>ContrastUp v2.3</li>
-                <li>Datamosh v2.0.2</li>
-                <li>Discotext v1.2.6</li>
-                <li>Dope v2.5.3</li>
-                <li>Easily 2 Dro v2.7.2</li>
-                <li>Effects matte v1.3.6</li>
-                <li>Face 3D v1.0.3</li>
-                <li>FoxFX Kit</li>
-                <li>Flex v1.1.3</li>
-                <li>Gaussian Splattering v1.5.2</li>
-                <li>Gestic v2.0.20</li>
-                <li>Glitchyff 100 VFX MED</li>
-                <li>Google Earth Studio Toolkit v2.31</li>
-                <li>HandyCam v1.2.3</li>
-                <li>Just camera Shake v1.2.10</li>
-                <li>Lazy v2.0.8</li>
-                <li>Let's go v1.5</li>
-                <li>Lockdown 2.3.1</li>
-                <li>Long v1.3</li>
-                <li>Matte Tool v2.1</li>
-                <li>Mo viewer v1.1 Fix</li>
-                <li>Motion Path Pro v1.3</li>
-                <li>Mr.Horse Preset 4.1.2 Fix</li>
-                <li>Mt.mographion2</li>
-                <li>Newton 3 v3.4 Win</li>
-                <li>OCAT V0.5.4</li>
-                <li>Overlord v1.22</li>
-                <li>Pastiche 2 v2.1.2c Win</li>
-                <li>PixelSorter v3.1.0</li>
-                <li>PLEXUS 3 + OBJ Toolkit v2.2.002</li>
-                <li>PrayMotive v1.1.2</li>
-                <li>PT Multiplane v2.2.04</li>
-                <li>Projection 3D v4.02</li>
-                <li>Ray Dynamic Color 2</li>
-                <li>Retrack 2.1.3</li>
-                <li>RubberHose 2 v2.1.11</li>
-                <li>Sky Box 1.0</li>
-                <li>Slice it Up v1.2</li>
-                <li>Squash & Stretch Pro 1.2.004</li>
-                <li>Styler v1.0.3-2</li>
-                <li>Text Chain 1.2.0</li>
-                <li>Videohive Photographic Brain Scan</li>
-                <li>Video Presets Pack Overlays</li>
-                <li>Wave Wrap</li>
-            </ul>
-        </div>
-    </div>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Globals ---
+        const landingScreen = document.getElementById('landing-screen');
+        const mainView = document.getElementById('main-view');
+        const detailView = document.getElementById('detail-view');
+        const canvas = document.getElementById('bg-canvas');
+        const mouseFollower = document.getElementById('mouse-follower');
+        let camera, scene, renderer, stars; let mouseX = 0, mouseY = 0; let isEntering = false;
+        
+        // --- 3D Background ---
+        function init3D() {
+            scene = new THREE.Scene(); camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000); camera.position.z = 1;
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true }); renderer.setSize(window.innerWidth, window.innerHeight); renderer.setClearColor(0x020208);
+            const vertices = []; for (let i = 0; i < 8000; i++) { const x = (Math.random() - 0.5) * 2000; const y = (Math.random() - 0.5) * 2000; const z = (Math.random() - 0.5) * 2000; vertices.push(x, y, z); }
+            const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            let sprite = new THREE.TextureLoader().load('https://threejs.org/examples/textures/sprites/disc.png'); let mat = new THREE.PointsMaterial({ color: 0xaaaaaa, size: 0.7, map: sprite });
+            stars = new THREE.Points(geo, mat); scene.add(stars);
+            window.addEventListener('resize', ()=>{ camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+            document.addEventListener('mousemove', (e)=>{ if(!isEntering){ mouseX = (e.clientX - window.innerWidth / 2) * 0.0005; mouseY = (e.clientY - window.innerHeight / 2) * 0.0005; } });
+            animate3D();
+        }
+        function animate3D() { 
+            requestAnimationFrame(animate3D); stars.rotation.y += 0.0001;
+            if (!isEntering) { camera.position.x += (mouseX - camera.position.x) * 0.05; camera.position.y += (-mouseY - camera.position.y) * 0.05; camera.lookAt(scene.position); } 
+            else { stars.material.size += 0.025; stars.rotation.y += 0.002; camera.position.z -= 0.5; }
+            renderer.render(scene, camera);
+        }
 
-    <div id="atomx-mega-pack-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>AtomX Mega Pack</h2>
-            <p>The complete collection of AtomX packs. Click any pack to download.</p>
-            <ul>
-                <li>8000+ High-Quality Motion Templates V8 <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>1500+ Transitions for After Effects <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Countdown Paper <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Hand Drawn Constructor <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Ransom Letters <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Motion Presets <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Text Presets <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Social Pack <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>VFX Effects Pack For AE <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Transitions Toolbox <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Technology Constructor <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>300+ Slides For After Effects <a href="#">Preview</a> N/A</li>
-                <li>Instagram Stories Big Pack <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Collage Kit Constructor <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>BASE | Transitions and Motion Graphics <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Text Presets | Atom <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Text Effect No Preview <a href="#">Download</a></li>
-                <li>Stream Overlays Pack <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Shape Elements Library <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Seamless Loop Kinetic Posters <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Romantic Pack V2.0 No Preview <a href="#">Download</a></li>
-                <li>Photo Animator Effects No Preview <a href="#">Download</a></li>
-                <li>Motion Graphics Pack // 550+ Animations <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Mega FX Pack (+1600 FX) <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Medical Constructor <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Just Typography Pack <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Instagram Stories For Ae <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>400+ Vertical Templates For After Effects <a href="#">Preview</a> N/A</li>
-                <li>iBG | 300+ Loop Backgrounds <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>History Pack V1 <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Graphics Pack Rise v1.0 No Preview <a href="#">Download</a></li>
-                <li>500+ Glitch Assets For After Effects <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>FRACTAL X | 650+ Glitch Pack <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Big Pack of Typography <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>900+ Backgrounds For After Effects <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>MegaMotion | Animation Motion Presets <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>4500+ Graphics Pack V5 No Preview <a href="#">Download</a></li>
-                <li>1000+ Titles For After Effects <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>700+ Assets For After Effects <a href="#">Preview</a> <a href="#">Download</a></li>
-                <li>Ultimate Logo Reveal Pack <a href="#">Preview</a> <a href="#">Download</a></li>
-            </ul>
-        </div>
-    </div>
+        // --- View Management & Animations ---
+        const switchView = (viewId) => {
+            document.querySelectorAll('.page-view').forEach(v => v.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            document.getElementById('main-content').scrollTo(0, 0);
+        };
 
-    <script src="script.js"></script>
+        const cardObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 50); // Staggered animation
+                    cardObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        // --- Render Functions ---
+        const renderCard = (item, type) => {
+            const isAsset = type === 'assets';
+            const actionAttr = isAsset ? `href="${item.url}" target="_blank"` : `onclick="showDetail('${type}', '${item.id}')"`;
+            const actionTag = isAsset ? 'a' : 'div';
+            const cursorClass = isAsset ? '' : 'cursor-pointer';
+            
+            const buttonText = isAsset ? 'Download' : 'View Details';
+            const buttonColor = isAsset ? 'bg-indigo-600/50 hover:bg-indigo-500/50' : 'bg-gray-500/20 hover:bg-gray-500/30';
+            
+            return `
+            <div class="glass-card flex flex-col ${cursorClass} searchable" data-name="${item.name.toLowerCase()} ${item.desc.toLowerCase()}" ${!isAsset ? `onclick="showDetail('${type}', '${item.id}')"` : ''}>
+                <div class="p-6 flex-grow flex flex-col items-center text-center">
+                    <img src="${item.img}" alt="${item.name}" class="w-20 h-20 mb-4 rounded-lg object-contain" onerror="this.onerror=null;this.src='https://placehold.co/80x80/111827/4f46e5?text=${item.name.charAt(0)}';">
+                    <h4 class="text-xl font-semibold text-white">${item.name}</h4>
+                    <p class="text-gray-400 text-sm mt-1 flex-grow">${item.desc}</p>
+                </div>
+                <${actionTag} ${actionAttr} class="block mt-auto text-center ${buttonColor} text-white font-semibold py-3 rounded-b-xl transition-colors">
+                    ${buttonText}
+                </${actionTag}>
+            </div>`;
+        };
+        
+        const populateMainView = () => {
+            for (const type in DB) {
+                const container = document.querySelector(`#${type} > div`);
+                if (container) {
+                    container.innerHTML = DB[type].map(item => renderCard(item, type)).join('');
+                }
+            }
+            document.querySelectorAll('.glass-card.searchable').forEach(card => cardObserver.observe(card));
+        };
+
+        window.showDetail = (type, id) => {
+            const item = DB[type].find(i => i.id === id);
+            if (!item) return;
+
+            const detailContent = document.getElementById('detail-content');
+            let versionsHTML = '';
+            if (item.versions && item.versions.length) {
+                versionsHTML = `
+                <div class="mt-8 pt-6 border-t border-white/10">
+                    <h4 class="text-2xl font-bold text-white mb-4">Available Downloads</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        ${item.versions.map(v => `
+                            <a href="${v.url}" target="_blank" class="glass-card !rounded-lg !opacity-100 !transform-none p-4 flex justify-between items-center hover:!bg-indigo-500/20 transition-colors">
+                                <span class="font-semibold text-white">${v.name}</span>
+                                <svg class="w-6 h-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                            </a>
+                        `).join('')}
+                    </div>
+                </div>`;
+            }
+
+            detailContent.innerHTML = `
+            <div class="glass-card !opacity-100 !transform-none p-8">
+                <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
+                    <img src="${item.img}" alt="${item.name}" class="w-48 h-48 rounded-xl object-contain flex-shrink-0 border-4 border-white/10" onerror="this.onerror=null;this.src='https://placehold.co/192x192/111827/4f46e5?text=${item.name.charAt(0)}';">
+                    <div class="flex-1 text-center md:text-left">
+                        <h3 class="text-4xl lg:text-5xl font-bold text-white tracking-tight mb-2">${item.name}</h3>
+                        <p class="text-gray-300 text-lg mb-6">${item.desc}</p>
+                    </div>
+                </div>
+                ${versionsHTML}
+            </div>
+            `;
+            switchView('detail-view');
+        };
+
+        // --- Search ---
+        const searchInput = document.getElementById('search-input');
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            let hasResults = false;
+            document.querySelectorAll('.resource-section').forEach(section => {
+                let sectionVisible = false;
+                section.querySelectorAll('.searchable').forEach(card => {
+                    if (card.dataset.name.includes(term)) {
+                        card.style.display = 'flex';
+                        sectionVisible = true; hasResults = true;
+                    } else { card.style.display = 'none'; }
+                });
+                section.style.display = sectionVisible ? 'block' : 'none';
+            });
+            document.getElementById('no-results').style.display = hasResults ? 'none' : 'block';
+        });
+
+        // --- Init & Event Listeners ---
+        init3D();
+        populateMainView();
+        
+        landingScreen.addEventListener('click', () => {
+            isEntering = true; mouseX = 0; mouseY = 0;
+            landingScreen.classList.add('hidden');
+            setTimeout(() => {
+                document.body.style.overflow = 'auto';
+                document.getElementById('content-container').style.display = 'block';
+                canvas.style.opacity = '0';
+                canvas.style.filter = 'blur(10px)';
+                mouseFollower.style.opacity = '1';
+            }, 1500);
+        });
+
+        document.querySelectorAll('.back-button').forEach(btn => btn.addEventListener('click', () => switchView('main-view')));
+        
+        document.body.addEventListener('mousemove', (e) => {
+            if(!isEntering) return;
+            requestAnimationFrame(() => {
+                mouseFollower.style.left = e.clientX + 'px';
+                mouseFollower.style.top = e.clientY + 'px';
+            });
+        });
+
+        document.getElementById('content-container').addEventListener('mousemove', (e) => {
+            document.querySelectorAll('.glass-card:hover').forEach(card => {
+                const rect = card.getBoundingClientRect();
+                card.style.setProperty('--x', `${e.clientX - rect.left}px`);
+                card.style.setProperty('--y', `${e.clientY - rect.top}px`);
+            });
+        });
+        
+        document.getElementById('content-container').style.display = 'none';
+    });
+    </script>
 </body>
 </html>
+
